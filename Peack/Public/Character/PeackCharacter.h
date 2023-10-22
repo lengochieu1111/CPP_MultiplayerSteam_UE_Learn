@@ -5,15 +5,15 @@
 #include "GameFramework/Character.h"
 #include "PeackCharacter.generated.h"
 
+class USpringArmComponent;
+class UCameraComponent;
+
 UCLASS()
 class PEACK_API APeackCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
-#pragma region FUNCTION
-
-#pragma endregion
-
+/* FUNCTION */
 public:
 	APeackCharacter();
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -23,8 +23,14 @@ protected:
 	virtual void BeginPlay() override;
 
 
-#pragma region PROPERTY
+/* PROPERTY */
+private:
+	UPROPERTY(VisibleAnywhere, Category = "Camera")
+	TObjectPtr<USpringArmComponent> SpringArmComponent;
 
-#pragma endregion
+	UPROPERTY(VisibleAnywhere, Category = "Camera")
+	TObjectPtr<UCameraComponent> CameraComponent;
+
+
 
 };
