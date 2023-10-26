@@ -13,6 +13,8 @@
 #include "Components/WidgetComponent.h"
 #include "Widget/LocalRoleWidget.h"
 
+#include "Weapon/Weapon.h"
+
 APeackCharacter::APeackCharacter()
 {
 	PrimaryActorTick.bCanEverTick = false;
@@ -56,6 +58,9 @@ void APeackCharacter::BeginPlay()
 	
 	ShowLocalRole();
 
+	if (HasAuthority())
+		SpawnWeapon();
+
 }
 
 void APeackCharacter::ShowLocalRole()
@@ -80,6 +85,28 @@ void APeackCharacter::ShowLocalRole()
 
 		LocalRoleWidget->UpdateText_Role(RoleText);
 	}
+
+}
+
+void APeackCharacter::SpawnWeapon()
+{
+	if (IsValid(this->WeaponClass) == false) return;
+
+	UWorld* MyLevel = GetWorld();
+	if (IsValid(MyLevel) == false) return;
+
+	// Spawn Weapon
+	FActorSpawnParameters SpawnParameters;
+	SpawnParameters.Owner = this;
+	SpawnParameters.Instigator = this;
+	AWeapon* SpawnWeapon = MyLevel->SpawnActor<AWeapon>(this->WeaponClass, SpawnParameters);
+
+	if (SpawnWeapon == nullptr) return;
+
+	// Attach The Weapon To Mesh
+	FAttachmentTransformRules AttachmentRules 
+		= FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true);
+	SpawnWeapon->AttachToComponent(GetMesh(), AttachmentRules, this->RifleSocketName);
 
 }
 
