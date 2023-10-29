@@ -27,6 +27,9 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// virtual void Tick(float DeltaTime) override;
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -37,6 +40,9 @@ private:
 
 	void ShowLocalRole();
 	void SpawnWeapon();
+
+	UFUNCTION()
+	void OnRep_CurrentWeapon();
 
 
 /* PROPERTY */
@@ -50,10 +56,13 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UWidgetComponent> WidgetComponent;
 
-	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	UPROPERTY(ReplicatedUsing = OnRep_CurrentWeapon)
+	TObjectPtr<AWeapon> CurrentWeapon;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	TSubclassOf<AWeapon> WeaponClass;
 
-	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	FName RifleSocketName;
 	
 	/*

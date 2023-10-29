@@ -4,6 +4,7 @@
 
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
@@ -14,6 +15,7 @@
 #include "Widget/LocalRoleWidget.h"
 
 #include "Weapon/Weapon.h"
+#include "Net/UnrealNetwork.h"
 
 APeackCharacter::APeackCharacter()
 {
@@ -23,6 +25,10 @@ APeackCharacter::APeackCharacter()
 	// Adjust Mesh Component
 	GetMesh()->AddLocalOffset(FVector(0.0, 0.0, -88.0));
 	GetMesh()->AddLocalRotation(FRotator(0.0, -90.0, 0.0));
+
+	// Adjust Movement Component
+	bUseControllerRotationYaw = false;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	// Spring Arm
 	this->SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm Component"));
@@ -49,6 +55,29 @@ APeackCharacter::APeackCharacter()
 	this->WidgetComponent->AddLocalOffset(FVector(0.0, 0.0, 100.0));
 	this->WidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
 	this->WidgetComponent->SetDrawAtDesiredSize(true);
+
+}
+
+void APeackCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	/* Setup Mapping Context */
+	SetupMappingContext();
+
+	/* Setup Input Action */
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		EnhancedInputComponent->BindAction(this->IA_Look, ETriggerEvent::Triggered, this, &ThisClass::Look);
+		EnhancedInputComponent->BindAction(this->IA_Move, ETriggerEvent::Triggered, this, &ThisClass::Move);
+	}
+}
+
+void APeackCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(APeackCharacter, CurrentWeapon);
 
 }
 
@@ -108,22 +137,18 @@ void APeackCharacter::SpawnWeapon()
 		= FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true);
 	SpawnWeapon->AttachToComponent(GetMesh(), AttachmentRules, this->RifleSocketName);
 
+	this->CurrentWeapon = SpawnWeapon;
 }
 
-void APeackCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void APeackCharacter::OnRep_CurrentWeapon()
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	/* Setup Mapping Context */
-	SetupMappingContext();
-
-	/* Setup Input Action */
-	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
-	{
-		EnhancedInputComponent->BindAction(this->IA_Look, ETriggerEvent::Triggered, this, &ThisClass::Look);
-		EnhancedInputComponent->BindAction(this->IA_Move, ETriggerEvent::Triggered, this, &ThisClass::Move);
-	}
-
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(
+			-1,
+			3.0f,
+			FColor::Purple,
+			TEXT("OnRep_CurrentWeapon")
+		);
 }
 
 	#pragma region Enhanced Input
