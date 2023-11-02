@@ -27,8 +27,9 @@ APeackCharacter::APeackCharacter()
 	GetMesh()->AddLocalRotation(FRotator(0.0, -90.0, 0.0));
 
 	// Adjust Movement Component
-	bUseControllerRotationYaw = false;
-	GetCharacterMovement()->bOrientRotationToMovement = true;
+	bUseControllerRotationYaw = true;
+	GetCharacterMovement()->bOrientRotationToMovement = false;
+	GetCharacterMovement()->MaxWalkSpeed = 400.0f;
 
 	// Spring Arm
 	this->SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm Component"));
