@@ -39,11 +39,16 @@ private:
 	void Move(const FInputActionValue& Value);
 	void FireButtonPressed();
 
+	void Fire();
+	UFUNCTION(Server, Reliable)
+	void Server_Fire();
+
 	void ShowLocalRole();
 	void SpawnWeapon();
 
 	UFUNCTION()
 	void OnRep_CurrentWeapon();
+
 
 
 /* PROPERTY */

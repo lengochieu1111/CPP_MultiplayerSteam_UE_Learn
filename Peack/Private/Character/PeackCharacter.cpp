@@ -202,12 +202,22 @@ void APeackCharacter::Move(const FInputActionValue& Value)
 
 void APeackCharacter::FireButtonPressed()
 {
+	Fire();
+
+}
+
+void APeackCharacter::Fire()
+{
+	Server_Fire();
+}
+
+void APeackCharacter::Server_Fire_Implementation()
+{
 	if (this->CurrentWeapon)
 	{
 		PlayAnimMontage(this->FireMontage_Rifle);
 		this->CurrentWeapon->WeaponFire();
 	}
-
 }
 
 	#pragma endregion
