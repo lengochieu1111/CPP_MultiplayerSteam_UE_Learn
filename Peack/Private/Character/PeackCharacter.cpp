@@ -203,7 +203,6 @@ void APeackCharacter::Move(const FInputActionValue& Value)
 void APeackCharacter::FireButtonPressed()
 {
 	Fire();
-
 }
 
 void APeackCharacter::Fire()
@@ -212,6 +211,11 @@ void APeackCharacter::Fire()
 }
 
 void APeackCharacter::Server_Fire_Implementation()
+{
+	Multicast_Fire();
+}
+
+void APeackCharacter::Multicast_Fire_Implementation()
 {
 	if (this->CurrentWeapon)
 	{

@@ -42,6 +42,8 @@ private:
 	void Fire();
 	UFUNCTION(Server, Reliable)
 	void Server_Fire();
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_Fire();
 
 	void ShowLocalRole();
 	void SpawnWeapon();
