@@ -37,6 +37,7 @@ private:
 	void SetupMappingContext();
 	void Look(const FInputActionValue& Value);
 	void Move(const FInputActionValue& Value);
+	void FireButtonPressed();
 
 	void ShowLocalRole();
 	void SpawnWeapon();
@@ -77,6 +78,13 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> IA_Move;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputAction> IA_Fire;
 
+	/*
+	* Fire 
+	*/
+	UPROPERTY(EditDefaultsOnly, Category = "Fire")
+	TObjectPtr<UAnimMontage> FireMontage_Rifle;
 
 };

@@ -15,6 +15,8 @@ public:
 	AWeapon();
 	//virtual void Tick(float DeltaTime) override;
 
+	void WeaponFire();
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -22,5 +24,8 @@ protected:
 private:	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USkeletalMeshComponent> MeshComponent;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Fire")
+	TObjectPtr<UAnimationAsset> AA_Fire;
 
 };

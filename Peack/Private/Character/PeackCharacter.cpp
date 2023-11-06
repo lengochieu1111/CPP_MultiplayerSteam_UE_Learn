@@ -71,6 +71,7 @@ void APeackCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	{
 		EnhancedInputComponent->BindAction(this->IA_Look, ETriggerEvent::Triggered, this, &ThisClass::Look);
 		EnhancedInputComponent->BindAction(this->IA_Move, ETriggerEvent::Triggered, this, &ThisClass::Move);
+		EnhancedInputComponent->BindAction(this->IA_Fire, ETriggerEvent::Triggered, this, &ThisClass::FireButtonPressed);
 	}
 }
 
@@ -197,6 +198,16 @@ void APeackCharacter::Move(const FInputActionValue& Value)
 		const FVector RightDirection = ControllerRotation.RotateVector(FVector::RightVector);
 		AddMovementInput(RightDirection, Value_Vector2D.X);
 	}
+}
+
+void APeackCharacter::FireButtonPressed()
+{
+	if (this->CurrentWeapon)
+	{
+		PlayAnimMontage(this->FireMontage_Rifle);
+		this->CurrentWeapon->WeaponFire();
+	}
+
 }
 
 	#pragma endregion
