@@ -17,6 +17,8 @@
 #include "Weapon/Weapon.h"
 #include "Net/UnrealNetwork.h"
 
+#include "Kismet/KismetSystemLibrary.h"
+
 APeackCharacter::APeackCharacter()
 {
 	PrimaryActorTick.bCanEverTick = false;
@@ -212,6 +214,7 @@ void APeackCharacter::Fire()
 
 void APeackCharacter::Server_Fire_Implementation()
 {
+	LineTraceFromCamera();
 	Multicast_Fire();
 }
 
@@ -222,6 +225,30 @@ void APeackCharacter::Multicast_Fire_Implementation()
 		PlayAnimMontage(this->FireMontage_Rifle);
 		this->CurrentWeapon->WeaponFire();
 	}
+}
+
+void APeackCharacter::LineTraceFromCamera()
+{
+	if (this->CameraComponent == nullptr) return;
+
+	const FVector& StartLocation = this->CameraComponent->GetComponentLocation();
+	const FVector& ForwardDirection = this->CameraComponent->GetForwardVector();
+	FVector EndLocation = StartLocation + (ForwardDirection * 10'000'00);
+	TArray<AActor*> ActorsToIgnore;
+	FHitResult HitResult;
+
+	UKismetSystemLibrary::LineTraceSingleForObjects(
+		this,
+		StartLocation,
+		EndLocation,
+		this->TraceObjectTypes,
+		false,
+		ActorsToIgnore,
+		EDrawDebugTrace::ForDuration,
+		HitResult,
+		true
+	);
+
 }
 
 	#pragma endregion

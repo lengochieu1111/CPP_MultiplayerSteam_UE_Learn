@@ -39,18 +39,21 @@ private:
 	void Move(const FInputActionValue& Value);
 	void FireButtonPressed();
 
-	void Fire();
-	UFUNCTION(Server, Reliable)
-	void Server_Fire();
-	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_Fire();
-
 	void ShowLocalRole();
 	void SpawnWeapon();
 
 	UFUNCTION()
 	void OnRep_CurrentWeapon();
 
+	void Fire();
+
+	UFUNCTION(Server, Reliable)
+	void Server_Fire();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_Fire();
+
+	void LineTraceFromCamera();
 
 
 /* PROPERTY */
@@ -93,5 +96,11 @@ private:
 	*/
 	UPROPERTY(EditDefaultsOnly, Category = "Fire")
 	TObjectPtr<UAnimMontage> FireMontage_Rifle;
+
+	/*
+	* Trace 
+	*/
+	UPROPERTY(EditDefaultsOnly, Category = "Trace Hit")
+	TArray<TEnumAsByte<EObjectTypeQuery>> TraceObjectTypes;
 
 };
