@@ -29,6 +29,9 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	// The function is called when control of the character is obtained
+	virtual void PossessedBy(AController* NewController) override;
+
 
 protected:
 	virtual void BeginPlay() override;
@@ -54,6 +57,9 @@ private:
 	void Multicast_Fire();
 
 	void LineTraceFromCamera();
+
+	UFUNCTION(Client, Reliable)
+	void Client_PlayerControllerReady();
 
 
 /* PROPERTY */

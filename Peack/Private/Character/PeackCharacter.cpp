@@ -19,6 +19,8 @@
 
 #include "Kismet/KismetSystemLibrary.h"
 
+#include "Controller/PeackPlayerController.h"
+
 APeackCharacter::APeackCharacter()
 {
 	PrimaryActorTick.bCanEverTick = false;
@@ -82,6 +84,23 @@ void APeackCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(APeackCharacter, CurrentWeapon);
+
+}
+
+void APeackCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	Client_PlayerControllerReady();
+
+}
+
+void APeackCharacter::Client_PlayerControllerReady_Implementation()
+{
+	if (APeackPlayerController* PeackPlayerController = Cast<APeackPlayerController>(GetController()))
+	{
+		PeackPlayerController->CreateWidget_Character();
+	}
 
 }
 
