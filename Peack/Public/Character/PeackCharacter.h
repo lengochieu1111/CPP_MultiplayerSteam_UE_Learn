@@ -50,6 +50,10 @@ private:
 
 	void Fire();
 
+	void FiringDelay();
+
+	void FireDelayFinished();
+
 	UFUNCTION(Server, Reliable)
 	void Server_Fire();
 
@@ -58,9 +62,23 @@ private:
 
 	void LineTraceFromCamera();
 
+	void ApplyDamageToPeackCharacter(const FHitResult& HitResult, const FVector& HitDirection);
+
 	UFUNCTION(Client, Reliable)
 	void Client_PlayerControllerReady();
 
+	UFUNCTION(NetMulticast, Reliable)
+	void Mutilcast_SpawnHitEffect(const FVector& HitLocation);
+
+	UFUNCTION()
+	void HandleTakePointDamage(AActor* DamagedActor, float Damage, class AController* InstigatedBy,
+		FVector HitLocation, class UPrimitiveComponent* FHitComponent, FName BoneName, 
+		FVector ShotFromDirection, const class UDamageType* DamageType, AActor* DamageCauser);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_PlayHitReactMontage(const FVector& HitDirection);
+
+	UAnimMontage* GetCorrectHitReactMontage(const FVector& HitDirection);
 
 /* PROPERTY */
 private:
@@ -82,9 +100,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	FName RifleSocketName;
 	
-	/*
-	* Input
-	*/
+/*
+* Input
+*/
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputMappingContext> IMC_Peack;
 
@@ -97,16 +115,52 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> IA_Fire;
 
-	/*
-	* Fire 
-	*/
+/*
+* Fire 
+*/
+	bool bIsFiring = false;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Fire")
 	TObjectPtr<UAnimMontage> FireMontage_Rifle;
 
-	/*
-	* Trace 
-	*/
+	UPROPERTY()
+	FTimerHandle FireDelayTimer;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Fire")
+	float FireRate = 2.0f;
+
+/*
+* Trace Hit
+*/
 	UPROPERTY(EditDefaultsOnly, Category = "Trace Hit")
 	TArray<TEnumAsByte<EObjectTypeQuery>> TraceObjectTypes;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Trace Hit")
+	float TraceHitOffset = 50.f;
+
+/*
+* Hit Impact
+*/
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	TObjectPtr<USoundBase> HitSound;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Effect")
+	TObjectPtr<UParticleSystem> HitEffect;
+
+/*
+* Hit React
+*/
+	UPROPERTY(EditDefaultsOnly, Category = "Hit React")
+	TObjectPtr<UAnimMontage> HitReactMontage_Front;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Hit React")
+	TObjectPtr<UAnimMontage> HitReactMontage_Back;	
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Hit React")
+	TObjectPtr<UAnimMontage> HitReactMontage_Left;	
+
+	UPROPERTY(EditDefaultsOnly, Category = "Hit React")
+	TObjectPtr<UAnimMontage> HitReactMontage_Right;
+
 
 };

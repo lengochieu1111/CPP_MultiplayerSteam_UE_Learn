@@ -18,6 +18,7 @@
 #include "Net/UnrealNetwork.h"
 
 #include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 #include "Controller/PeackPlayerController.h"
 
@@ -40,6 +41,8 @@ APeackCharacter::APeackCharacter()
 	this->SpringArmComponent->SetupAttachment(GetRootComponent());
 	this->SpringArmComponent->TargetArmLength = 400.0f;
 	this->SpringArmComponent->bUsePawnControlRotation = true;
+
+	this->SpringArmComponent->SocketOffset = FVector(0.0, 50.0, 80.0);
 	
 	// Camera
 	this->CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera Component"));
@@ -60,6 +63,9 @@ APeackCharacter::APeackCharacter()
 	this->WidgetComponent->AddLocalOffset(FVector(0.0, 0.0, 100.0));
 	this->WidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
 	this->WidgetComponent->SetDrawAtDesiredSize(true);
+
+	// Set Collision Object Type
+	GetMesh()->SetCollisionObjectType(ECollisionChannel::ECC_EngineTraceChannel1);
 
 }
 
@@ -95,23 +101,27 @@ void APeackCharacter::PossessedBy(AController* NewController)
 
 }
 
+void APeackCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	ShowLocalRole();
+
+	if (HasAuthority())
+	{
+		SpawnWeapon();
+
+		OnTakePointDamage.AddDynamic(this, &ThisClass::HandleTakePointDamage);
+	}
+
+}
+
 void APeackCharacter::Client_PlayerControllerReady_Implementation()
 {
 	if (APeackPlayerController* PeackPlayerController = Cast<APeackPlayerController>(GetController()))
 	{
 		PeackPlayerController->CreateWidget_Character();
 	}
-
-}
-
-void APeackCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-	
-	ShowLocalRole();
-
-	if (HasAuthority())
-		SpawnWeapon();
 
 }
 
@@ -226,17 +236,49 @@ void APeackCharacter::FireButtonPressed()
 	Fire();
 }
 
+	#pragma endregion
+
+	#pragma region Fire
+
 void APeackCharacter::Fire()
 {
 	Server_Fire();
 }
 
+// Server
 void APeackCharacter::Server_Fire_Implementation()
 {
+	if (this->bIsFiring) return;
+
 	LineTraceFromCamera();
 	Multicast_Fire();
+	this->bIsFiring = true;
+
+	FiringDelay();
 }
 
+void APeackCharacter::FiringDelay()
+{
+	FTimerManager& WorldTimerManager = GetWorldTimerManager();
+
+	if (WorldTimerManager.IsTimerActive(this->FireDelayTimer))
+		WorldTimerManager.ClearTimer(this->FireDelayTimer);
+
+	WorldTimerManager.SetTimer(
+		this->FireDelayTimer,
+		this,
+		&ThisClass::FireDelayFinished,
+		1.0f / this->FireRate
+	);
+
+}
+
+void APeackCharacter::FireDelayFinished()
+{
+	this->bIsFiring = false;
+}
+
+// Server, Client
 void APeackCharacter::Multicast_Fire_Implementation()
 {
 	if (this->CurrentWeapon)
@@ -250,13 +292,18 @@ void APeackCharacter::LineTraceFromCamera()
 {
 	if (this->CameraComponent == nullptr) return;
 
-	const FVector& StartLocation = this->CameraComponent->GetComponentLocation();
-	const FVector& ForwardDirection = this->CameraComponent->GetForwardVector();
-	FVector EndLocation = StartLocation + (ForwardDirection * 10'000'00);
+	const FVector& CameraLocation = this->CameraComponent->GetComponentLocation();
+	const FVector& CameraDirection = this->CameraComponent->GetForwardVector();
+
+	float TraceStartOffset = FVector::Distance(CameraLocation, GetActorLocation()) + this->TraceHitOffset;
+
+	FVector StartLocation = CameraLocation + (CameraDirection * TraceStartOffset);
+	FVector EndLocation = StartLocation + (CameraDirection * 10'000'00);
+
 	TArray<AActor*> ActorsToIgnore;
 	FHitResult HitResult;
 
-	UKismetSystemLibrary::LineTraceSingleForObjects(
+	const bool bDoHit = UKismetSystemLibrary::LineTraceSingleForObjects(
 		this,
 		StartLocation,
 		EndLocation,
@@ -268,8 +315,90 @@ void APeackCharacter::LineTraceFromCamera()
 		true
 	);
 
+	if (bDoHit)
+	{
+		Mutilcast_SpawnHitEffect(HitResult.ImpactPoint);
+
+		ApplyDamageToPeackCharacter(HitResult, CameraDirection);
+
+	}
+
 }
 
+void APeackCharacter::ApplyDamageToPeackCharacter(const FHitResult& HitResult, const FVector& HitDirection)
+{
+	UGameplayStatics::ApplyPointDamage(
+		HitResult.GetActor(),
+		20.0f,
+		HitDirection,
+		HitResult,
+		GetController(),
+		this->CurrentWeapon,
+		UGameplayStatics::StaticClass()
+	);
+}
+
+void APeackCharacter::HandleTakePointDamage(AActor* DamagedActor, float Damage, AController* InstigatedBy, FVector HitLocation, UPrimitiveComponent* FHitComponent, FName BoneName, FVector ShotFromDirection, const UDamageType* DamageType, AActor* DamageCauser)
+{
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(
+			-1,
+			1.0f,
+			FColor::Red,
+			FString(TEXT("Handle Take Point Damage"))
+		);
+
+	Multicast_PlayHitReactMontage(ShotFromDirection);
+
+}
+
+// Server, Client
+void APeackCharacter::Multicast_PlayHitReactMontage_Implementation(const FVector& HitDirection)
+{
+	PlayAnimMontage(GetCorrectHitReactMontage(HitDirection));
+}
+
+UAnimMontage* APeackCharacter::GetCorrectHitReactMontage(const FVector& HitDirection)
+{
+	const FVector& ForwardDirection = GetActorForwardVector();
+
+	float Dot = FVector::DotProduct(HitDirection, ForwardDirection);
+	bool bShouldUseDot = FMath::Abs(Dot) > 0.5;
+	if (bShouldUseDot)
+	{
+		if (Dot > 0.5)
+			return this->HitReactMontage_Back;
+		else
+			return this->HitReactMontage_Front;
+	}
+	else
+	{
+		FVector Cross = FVector::CrossProduct(HitDirection, ForwardDirection);
+		if (Cross.Z > 0.5)
+			return this->HitReactMontage_Right;
+		else
+			return this->HitReactMontage_Left;
+	}
+
+}
+
+// Server, Client
+void APeackCharacter::Mutilcast_SpawnHitEffect_Implementation(const FVector& HitLocation)
+{
+	UGameplayStatics::SpawnEmitterAtLocation(
+		GetWorld(),
+		this->HitEffect,
+		HitLocation
+	);
+
+	UGameplayStatics::PlaySoundAtLocation(
+		this,
+		this->HitSound,
+		HitLocation
+	);
+
+}
 	#pragma endregion
+
 
 
