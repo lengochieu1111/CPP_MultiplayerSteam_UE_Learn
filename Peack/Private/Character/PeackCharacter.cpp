@@ -121,6 +121,7 @@ void APeackCharacter::Client_PlayerControllerReady_Implementation()
 	if (APeackPlayerController* PeackPlayerController = Cast<APeackPlayerController>(GetController()))
 	{
 		PeackPlayerController->CreateWidget_Character();
+		PeackPlayerController->UpdateBar_Health(this->Health, this->MaxHealth);
 	}
 
 }

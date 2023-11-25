@@ -130,6 +130,15 @@ private:
 	float FireRate = 2.0f;
 
 /*
+* Health
+*/
+	UPROPERTY(EditDefaultsOnly, Category = "Health")
+	float Health = 100.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Health")
+	float MaxHealth = 100.0f;
+
+/*
 * Trace Hit
 */
 	UPROPERTY(EditDefaultsOnly, Category = "Trace Hit")

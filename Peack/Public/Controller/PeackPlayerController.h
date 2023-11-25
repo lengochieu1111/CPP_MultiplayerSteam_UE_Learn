@@ -5,9 +5,8 @@
 #include "GameFramework/PlayerController.h"
 #include "PeackPlayerController.generated.h"
 
-/**
- * 
- */
+class UCharacterWidget;
+
 UCLASS()
 class PEACK_API APeackPlayerController : public APlayerController
 {
@@ -16,11 +15,13 @@ class PEACK_API APeackPlayerController : public APlayerController
 public:
 	void CreateWidget_Character();
 
+	void UpdateBar_Health(float Health, float MaxHealth);
+
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Widget")
 	TSubclassOf<UUserWidget> WidgetClass_Character;
 
 	UPROPERTY()
-	TObjectPtr<UUserWidget> Widget_Character;
+	TObjectPtr<UCharacterWidget> Widget_Character;
 	
 };
