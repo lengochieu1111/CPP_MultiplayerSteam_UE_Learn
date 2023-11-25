@@ -91,6 +91,8 @@ void APeackCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 
 	DOREPLIFETIME(APeackCharacter, CurrentWeapon);
 
+	DOREPLIFETIME_CONDITION(APeackCharacter, Health, COND_OwnerOnly);
+
 }
 
 void APeackCharacter::PossessedBy(AController* NewController)
@@ -118,10 +120,10 @@ void APeackCharacter::BeginPlay()
 
 void APeackCharacter::Client_PlayerControllerReady_Implementation()
 {
-	if (APeackPlayerController* PeackPlayerController = Cast<APeackPlayerController>(GetController()))
+	if (this->PeackPlayerController = Cast<APeackPlayerController>(GetController()))
 	{
-		PeackPlayerController->CreateWidget_Character();
-		PeackPlayerController->UpdateBar_Health(this->Health, this->MaxHealth);
+		this->PeackPlayerController->CreateWidget_Character();
+		this->PeackPlayerController->UpdateBar_Health(this->Health, this->MaxHealth);
 	}
 
 }
@@ -341,15 +343,27 @@ void APeackCharacter::ApplyDamageToPeackCharacter(const FHitResult& HitResult, c
 
 void APeackCharacter::HandleTakePointDamage(AActor* DamagedActor, float Damage, AController* InstigatedBy, FVector HitLocation, UPrimitiveComponent* FHitComponent, FName BoneName, FVector ShotFromDirection, const UDamageType* DamageType, AActor* DamageCauser)
 {
+	this->Health = FMath::Max(this->Health - Damage, 0);
+
+	if (IsLocallyControlled())
+		this->PeackPlayerController->UpdateBar_Health(this->Health, this->MaxHealth);
+
+	Multicast_PlayHitReactMontage(ShotFromDirection);
+
+}
+
+// Client who controlled this character
+void APeackCharacter::OnRep_Health()
+{
 	if (GEngine)
 		GEngine->AddOnScreenDebugMessage(
 			-1,
 			1.0f,
-			FColor::Red,
-			FString(TEXT("Handle Take Point Damage"))
+			FColor::Blue,
+			FString(TEXT("OnRep_Health"))
 		);
 
-	Multicast_PlayHitReactMontage(ShotFromDirection);
+	this->PeackPlayerController->UpdateBar_Health(this->Health, this->MaxHealth);
 
 }
 

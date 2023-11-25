@@ -16,6 +16,8 @@ class UWidgetComponent;
 
 class AWeapon;
 
+class APeackPlayerController;
+
 UCLASS()
 class PEACK_API APeackCharacter : public ACharacter
 {
@@ -80,6 +82,9 @@ private:
 
 	UAnimMontage* GetCorrectHitReactMontage(const FVector& HitDirection);
 
+	UFUNCTION()
+	void OnRep_Health();
+
 /* PROPERTY */
 private:
 	UPROPERTY(VisibleAnywhere)
@@ -99,6 +104,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	FName RifleSocketName;
+
+	UPROPERTY()
+	TObjectPtr<APeackPlayerController> PeackPlayerController;
 	
 /*
 * Input
@@ -132,7 +140,7 @@ private:
 /*
 * Health
 */
-	UPROPERTY(EditDefaultsOnly, Category = "Health")
+	UPROPERTY(EditDefaultsOnly, Category = "Health", ReplicatedUsing = OnRep_Health)
 	float Health = 100.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Health")
