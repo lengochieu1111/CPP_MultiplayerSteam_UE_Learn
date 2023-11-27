@@ -85,6 +85,14 @@ private:
 	UFUNCTION()
 	void OnRep_Health();
 
+	void HandleDead();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_HandleDead();
+
+	UFUNCTION(Client, Reliable)
+	void Client_HandleDead();
+
 /* PROPERTY */
 private:
 	UPROPERTY(VisibleAnywhere)

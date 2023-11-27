@@ -328,6 +328,8 @@ void APeackCharacter::LineTraceFromCamera()
 
 }
 
+	#pragma endregion
+
 void APeackCharacter::ApplyDamageToPeackCharacter(const FHitResult& HitResult, const FVector& HitDirection)
 {
 	UGameplayStatics::ApplyPointDamage(
@@ -346,22 +348,54 @@ void APeackCharacter::HandleTakePointDamage(AActor* DamagedActor, float Damage, 
 	this->Health = FMath::Max(this->Health - Damage, 0);
 
 	if (IsLocallyControlled())
-		this->PeackPlayerController->UpdateBar_Health(this->Health, this->MaxHealth);
+		OnRep_Health();
 
-	Multicast_PlayHitReactMontage(ShotFromDirection);
+	if (this->Health > 0.0f)
+		Multicast_PlayHitReactMontage(ShotFromDirection);
+	else
+		HandleDead();
 
+}
+
+void APeackCharacter::HandleDead()
+{
+	if (GetCharacterMovement())
+	{
+		GetCharacterMovement()->StopMovementImmediately();
+		GetCharacterMovement()->DisableMovement();
+	}
+
+	Multicast_HandleDead();
+	Client_HandleDead();
+
+}
+
+// Multicast
+void APeackCharacter::Multicast_HandleDead_Implementation()
+{
+	if (GetMesh())
+	{
+		GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+		GetMesh()->SetSimulatePhysics(true);
+		GetMesh()->SetPhysicsBlendWeight(1.0f);
+	}
+
+	if (GetCapsuleComponent())
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+// Client
+void APeackCharacter::Client_HandleDead_Implementation()
+{
+	if (this->PeackPlayerController == nullptr)
+		this->PeackPlayerController = Cast<APeackPlayerController>(GetController());
+
+	DisableInput(this->PeackPlayerController);
 }
 
 // Client who controlled this character
 void APeackCharacter::OnRep_Health()
 {
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(
-			-1,
-			1.0f,
-			FColor::Blue,
-			FString(TEXT("OnRep_Health"))
-		);
 
 	this->PeackPlayerController->UpdateBar_Health(this->Health, this->MaxHealth);
 
@@ -413,7 +447,7 @@ void APeackCharacter::Mutilcast_SpawnHitEffect_Implementation(const FVector& Hit
 	);
 
 }
-	#pragma endregion
+
 
 
 
