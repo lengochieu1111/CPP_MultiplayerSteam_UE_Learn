@@ -34,6 +34,7 @@ public:
 	// The function is called when control of the character is obtained
 	virtual void PossessedBy(AController* NewController) override;
 
+	virtual void Destroyed() override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -92,6 +93,8 @@ private:
 
 	UFUNCTION(Client, Reliable)
 	void Client_HandleDead();
+
+	void RequestRespawn();
 
 /* PROPERTY */
 private:
@@ -187,5 +190,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Hit React")
 	TObjectPtr<UAnimMontage> HitReactMontage_Right;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Dead")
+	float DeadSecond = 2.0f;
 
 };

@@ -21,6 +21,7 @@
 #include "Kismet/GameplayStatics.h"
 
 #include "Controller/PeackPlayerController.h"
+#include "GameMode/PeackGameMode.h"
 
 APeackCharacter::APeackCharacter()
 {
@@ -67,6 +68,9 @@ APeackCharacter::APeackCharacter()
 	// Set Collision Object Type
 	GetMesh()->SetCollisionObjectType(ECollisionChannel::ECC_EngineTraceChannel1);
 
+	// 
+	SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
 }
 
 void APeackCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -101,6 +105,32 @@ void APeackCharacter::PossessedBy(AController* NewController)
 
 	Client_PlayerControllerReady();
 
+}
+
+void APeackCharacter::Destroyed()
+{
+	if (this->CurrentWeapon)
+	{
+		this->CurrentWeapon->Destroy();
+	}
+
+	if (HasAuthority())
+	{
+		RequestRespawn();
+	}
+
+	Super::Destroyed();
+}
+
+void APeackCharacter::RequestRespawn()
+{
+	if (UWorld* World = GetWorld())
+	{
+		if (APeackGameMode* PeackGameMode = World->GetAuthGameMode<APeackGameMode>())
+		{
+			PeackGameMode->RequestRespawn(this, GetController());
+		}
+	}
 }
 
 void APeackCharacter::BeginPlay()
@@ -178,13 +208,13 @@ void APeackCharacter::SpawnWeapon()
 
 void APeackCharacter::OnRep_CurrentWeapon()
 {
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(
-			-1,
-			3.0f,
-			FColor::Purple,
-			TEXT("OnRep_CurrentWeapon")
-		);
+	//if (GEngine)
+	//	GEngine->AddOnScreenDebugMessage(
+	//		-1,
+	//		3.0f,
+	//		FColor::Purple,
+	//		TEXT("OnRep_CurrentWeapon")
+	//	);
 }
 
 	#pragma region Enhanced Input
@@ -368,6 +398,7 @@ void APeackCharacter::HandleDead()
 	Multicast_HandleDead();
 	Client_HandleDead();
 
+	SetLifeSpan(DeadSecond);
 }
 
 // Multicast
