@@ -422,6 +422,12 @@ void APeackCharacter::Client_HandleDead_Implementation()
 		this->PeackPlayerController = Cast<APeackPlayerController>(GetController());
 
 	DisableInput(this->PeackPlayerController);
+
+	this->CameraComponent->AttachToComponent(
+		GetMesh(), 
+		FAttachmentTransformRules::KeepWorldTransform
+	);
+
 }
 
 // Client who controlled this character
