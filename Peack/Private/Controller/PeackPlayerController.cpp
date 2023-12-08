@@ -3,6 +3,9 @@
 #include "Controller/PeackPlayerController.h"
 
 #include "Widget/CharacterWidget.h"
+#include "Widget/PlayerStateWidget.h"
+
+
 
 void APeackPlayerController::CreateWidget_Character()
 {
@@ -15,6 +18,23 @@ void APeackPlayerController::CreateWidget_Character()
 		this->Widget_Character->AddToViewport();
 	}
 
+}
+
+void APeackPlayerController::ReadyPlayerState()
+{
+	CreateWidget_PlayerState();
+}
+
+void APeackPlayerController::CreateWidget_PlayerState()
+{
+	if (this->Widget_PlayerState) return;
+
+	this->Widget_PlayerState = CreateWidget< UPlayerStateWidget>(this, this->WidgetClass_PlayerState);
+
+	if (this->Widget_PlayerState)
+	{
+		this->Widget_PlayerState->AddToViewport();
+	}
 }
 
 void APeackPlayerController::UpdateBar_Health(float Health, float MaxHealth)

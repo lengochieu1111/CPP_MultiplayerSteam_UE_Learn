@@ -10,6 +10,7 @@ AWeapon::AWeapon()
 
 	/* Skeletal Mesh Component */
 	this->MeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh Component"));
+	SetRootComponent(this->MeshComponent);
 	this->MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 }
