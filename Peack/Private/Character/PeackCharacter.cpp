@@ -124,13 +124,20 @@ void APeackCharacter::Destroyed()
 
 void APeackCharacter::RequestRespawn()
 {
+	if (APeackGameMode* PeackGameMode = GetAuthPeackGameMode())
+	{
+		PeackGameMode->RequestRespawn(this, GetController());
+	}
+}
+
+APeackGameMode* APeackCharacter::GetAuthPeackGameMode() const
+{
 	if (UWorld* World = GetWorld())
 	{
-		if (APeackGameMode* PeackGameMode = World->GetAuthGameMode<APeackGameMode>())
-		{
-			PeackGameMode->RequestRespawn(this, GetController());
-		}
+		return World->GetAuthGameMode<APeackGameMode>();
 	}
+
+	return nullptr;
 }
 
 void APeackCharacter::BeginPlay()
@@ -381,9 +388,18 @@ void APeackCharacter::HandleTakePointDamage(AActor* DamagedActor, float Damage, 
 		OnRep_Health();
 
 	if (this->Health > 0.0f)
+	{
 		Multicast_PlayHitReactMontage(ShotFromDirection);
+	}
 	else
+	{
+		if (APeackGameMode* PeackGameMode = GetAuthPeackGameMode())
+		{
+			PeackGameMode->HandleCharacterDead(InstigatedBy, GetController());
+		}
+
 		HandleDead();
+	}
 
 }
 

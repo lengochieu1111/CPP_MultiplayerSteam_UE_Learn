@@ -17,6 +17,7 @@ class UWidgetComponent;
 class AWeapon;
 
 class APeackPlayerController;
+class APeackGameMode;
 
 UCLASS()
 class PEACK_API APeackCharacter : public ACharacter
@@ -95,6 +96,8 @@ private:
 	void Client_HandleDead();
 
 	void RequestRespawn();
+
+	APeackGameMode* GetAuthPeackGameMode() const;
 
 /* PROPERTY */
 private:

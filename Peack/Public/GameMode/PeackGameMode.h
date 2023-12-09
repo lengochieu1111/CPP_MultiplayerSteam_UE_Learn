@@ -16,4 +16,6 @@ class PEACK_API APeackGameMode : public AGameMode
 public:
 	void RequestRespawn(ACharacter* GivenCharacter, AController* GivenController);
 
+	void HandleCharacterDead(AController* InstigatorController, AController* VictimController);
+
 };

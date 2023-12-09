@@ -11,6 +11,29 @@ void APeackPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 
 }
 
+void APeackPlayerState::AddOne_Score()
+{
+	SetScore(GetScore() + 1.0f);
+
+	if (IsLocallyControlled())
+	{
+		UpdateText_Score();
+	}
+}
+
+void APeackPlayerState::UpdateText_Score()
+{
+	if (this->PeackPlayerController == nullptr)
+	{
+		this->PeackPlayerController = Cast<APeackPlayerController>(GetOwningController());
+	}
+
+	if (this->PeackPlayerController)
+	{
+		this->PeackPlayerController->UpdateText_Score(GetScore());
+	}
+}
+
 void APeackPlayerState::BeginPlay()
 {
 	Super::BeginPlay();
@@ -21,14 +44,9 @@ void APeackPlayerState::BeginPlay()
 
 		if (IsLocallyControlled())
 		{
-			if (APeackPlayerController* PeackPlayerController = Cast<APeackPlayerController>(GetOwningController()))
-			{
-				PeackPlayerController->ReadyPlayerState();
-			}
+			OnRep_Ready();
 		}
-		
 	}
-	
 }
 
 bool APeackPlayerState::IsLocallyControlled() const
@@ -39,8 +57,8 @@ bool APeackPlayerState::IsLocallyControlled() const
 
 void APeackPlayerState::OnRep_Ready()
 {
-	if (APeackPlayerController* PeackPlayerController = Cast<APeackPlayerController>(GetOwningController()))
+	if (this->PeackPlayerController = Cast<APeackPlayerController>(GetOwningController()))
 	{
-		PeackPlayerController->ReadyPlayerState();
+		this->PeackPlayerController->ReadyPlayerState(this);
 	}
 }

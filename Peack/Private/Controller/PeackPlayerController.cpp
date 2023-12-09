@@ -4,7 +4,7 @@
 
 #include "Widget/CharacterWidget.h"
 #include "Widget/PlayerStateWidget.h"
-
+#include "PlayerState/PeackPlayerState.h"
 
 
 void APeackPlayerController::CreateWidget_Character()
@@ -20,9 +20,13 @@ void APeackPlayerController::CreateWidget_Character()
 
 }
 
-void APeackPlayerController::ReadyPlayerState()
+void APeackPlayerController::ReadyPlayerState(APeackPlayerState* GivenPlayerState)
 {
-	CreateWidget_PlayerState();
+	if (GivenPlayerState)
+	{
+		CreateWidget_PlayerState();
+		UpdateText_Score(GivenPlayerState->GetScore());
+	}
 }
 
 void APeackPlayerController::CreateWidget_PlayerState()
@@ -42,5 +46,13 @@ void APeackPlayerController::UpdateBar_Health(float Health, float MaxHealth)
 	if (this->Widget_Character)
 	{
 		this->Widget_Character->UpdateBar_Health(Health, MaxHealth);
+	}
+}
+
+void APeackPlayerController::UpdateText_Score(float GivenScore)
+{
+	if (this->Widget_PlayerState)
+	{
+		this->Widget_PlayerState->UpdateText_Score(GivenScore);
 	}
 }

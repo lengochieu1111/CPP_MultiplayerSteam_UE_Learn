@@ -5,9 +5,8 @@
 #include "GameFramework/PlayerState.h"
 #include "PeackPlayerState.generated.h"
 
-/**
- * 
- */
+class APeackPlayerController;
+
 UCLASS()
 class PEACK_API APeackPlayerState : public APlayerState
 {
@@ -16,6 +15,8 @@ class PEACK_API APeackPlayerState : public APlayerState
 public:
 	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 
+	void AddOne_Score();
+	void UpdateText_Score();
 protected:
 	virtual void BeginPlay()  override;
 
@@ -26,8 +27,10 @@ private:
 	void OnRep_Ready();
 
 private:
+	UPROPERTY()
+	TObjectPtr<APeackPlayerController> PeackPlayerController;
+
 	UPROPERTY(ReplicatedUsing = OnRep_Ready)
 	bool bReady = false;
 
-	
 };

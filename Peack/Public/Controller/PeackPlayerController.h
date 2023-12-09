@@ -7,6 +7,7 @@
 
 class UCharacterWidget;
 class UPlayerStateWidget;
+class APeackPlayerState;
 
 UCLASS()
 class PEACK_API APeackPlayerController : public APlayerController
@@ -15,9 +16,10 @@ class PEACK_API APeackPlayerController : public APlayerController
 
 public:
 	void CreateWidget_Character();
-	void ReadyPlayerState();
+	void ReadyPlayerState(APeackPlayerState* GivenPlayerState);
 	void CreateWidget_PlayerState();
 	void UpdateBar_Health(float Health, float MaxHealth);
+	void UpdateText_Score(float GivenScore);
 
 private:
 /*
