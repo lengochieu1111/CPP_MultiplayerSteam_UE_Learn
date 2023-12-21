@@ -26,6 +26,7 @@ void APeackPlayerController::ReadyPlayerState(APeackPlayerState* GivenPlayerStat
 	{
 		CreateWidget_PlayerState();
 		UpdateText_Score(GivenPlayerState->GetScore());
+		UpdateText_Death(GivenPlayerState->GetDeath());
 	}
 }
 
@@ -54,5 +55,13 @@ void APeackPlayerController::UpdateText_Score(float GivenScore)
 	if (this->Widget_PlayerState)
 	{
 		this->Widget_PlayerState->UpdateText_Score(GivenScore);
+	}
+}
+
+void APeackPlayerController::UpdateText_Death(float GivenDeath)
+{
+	if (this->Widget_PlayerState)
+	{
+		this->Widget_PlayerState->UpdateText_Death(GivenDeath);
 	}
 }

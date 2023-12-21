@@ -16,10 +16,12 @@ class PEACK_API APeackPlayerController : public APlayerController
 
 public:
 	void CreateWidget_Character();
-	void ReadyPlayerState(APeackPlayerState* GivenPlayerState);
 	void CreateWidget_PlayerState();
+	void ReadyPlayerState(APeackPlayerState* GivenPlayerState);
+
 	void UpdateBar_Health(float Health, float MaxHealth);
 	void UpdateText_Score(float GivenScore);
+	void UpdateText_Death(float GivenDeath);
 
 private:
 /*

@@ -14,9 +14,13 @@ class PEACK_API UPlayerStateWidget : public UUserWidget
 
 public:
 	void UpdateText_Score(float GivenScore);
+	void UpdateText_Death(float GivenDeath);
 	
 private:
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* Text_Score;
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* Text_Death;
 
 };

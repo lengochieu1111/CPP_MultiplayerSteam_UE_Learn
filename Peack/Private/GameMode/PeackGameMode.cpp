@@ -35,4 +35,9 @@ void APeackGameMode::HandleCharacterDead(AController* InstigatorController, ACon
 	{
 		PeackPlayerState->AddOne_Score();
 	}
+
+	if (APeackPlayerState* PeackPlayerState = VictimController->GetPlayerState<APeackPlayerState>())
+	{
+		PeackPlayerState->AddOne_Death();
+	}
 }
