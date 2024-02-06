@@ -8,6 +8,11 @@
 #include "Controller/PeackPlayerController.h"
 #include "PlayerState/PeackPlayerState.h"
 
+APeackGameMode::APeackGameMode()
+{
+	bDelayedStart = true;
+}
+
 void APeackGameMode::RequestRespawn(ACharacter* GivenCharacter, AController* GivenController)
 {
 	if (GivenCharacter)
