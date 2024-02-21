@@ -8,6 +8,7 @@
 class UCharacterWidget;
 class UPlayerStateWidget;
 class APeackPlayerState;
+class UWarmupWidget;
 
 UCLASS()
 class PEACK_API APeackPlayerController : public APlayerController
@@ -20,12 +21,18 @@ public:
 
 	void CreateWidget_Character();
 	void CreateWidget_PlayerState();
+	void CreateWidget_Warmup();
 	void ReadyPlayerState(APeackPlayerState* GivenPlayerState);
 
 	void UpdateBar_Health(float Health, float MaxHealth);
 	void UpdateText_Score(float GivenScore);
 	void UpdateText_Death(float GivenDeath);
 	void UpdateText_Countdown(int TimeLeft);
+
+	void MatchStateGameModeChanged(const FName NewMatchState);
+
+	UFUNCTION(Client, Reliable)
+	void Client_MatchStateGameModeChanged(const FName NewMatchState);
 
 private:
 	double GetWorldTime() const;
@@ -64,5 +71,14 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UPlayerStateWidget> Widget_PlayerState;
+
+	/*
+	* Warmup Widget
+	*/
+	UPROPERTY(EditDefaultsOnly, Category = "Widget")
+	TSubclassOf<UUserWidget> WidgetClass_Warmup;
+
+	UPROPERTY()
+	TObjectPtr<UWarmupWidget> Widget_Warmup;
 	
 };

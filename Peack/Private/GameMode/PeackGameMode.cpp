@@ -46,3 +46,18 @@ void APeackGameMode::HandleCharacterDead(AController* InstigatorController, ACon
 		PeackPlayerState->AddOne_Death();
 	}
 }
+
+// Sever
+void APeackGameMode::OnMatchStateSet()
+{
+	Super::OnMatchStateSet();
+
+	for (FConstPlayerControllerIterator PCI = GetWorld()->GetPlayerControllerIterator(); PCI; ++PCI)
+	{
+		if (APeackPlayerController* PPC = Cast<APeackPlayerController>(*PCI))
+		{
+			PPC->MatchStateGameModeChanged(GetMatchState());
+		}
+	}
+
+}

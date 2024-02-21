@@ -5,6 +5,8 @@
 #include "Widget/CharacterWidget.h"
 #include "Widget/PlayerStateWidget.h"
 #include "PlayerState/PeackPlayerState.h"
+#include "GameFramework/GameMode.h"
+#include "Widget/WarmupWidget.h"
 
 
 void APeackPlayerController::Tick(float DeltaSeconds)
@@ -60,12 +62,15 @@ void APeackPlayerController::CreateWidget_Character()
 
 void APeackPlayerController::ReadyPlayerState(APeackPlayerState* GivenPlayerState)
 {
-	if (GivenPlayerState)
-	{
-		CreateWidget_PlayerState();
-		UpdateText_Score(GivenPlayerState->GetScore());
-		UpdateText_Death(GivenPlayerState->GetDeath());
-	}
+	/*
+		if (GivenPlayerState)
+		{
+			CreateWidget_PlayerState();
+			UpdateText_Score(GivenPlayerState->GetScore());
+			UpdateText_Death(GivenPlayerState->GetDeath());
+		}
+
+	*/
 }
 
 void APeackPlayerController::CreateWidget_PlayerState()
@@ -77,6 +82,18 @@ void APeackPlayerController::CreateWidget_PlayerState()
 	if (this->Widget_PlayerState)
 	{
 		this->Widget_PlayerState->AddToViewport();
+	}
+}
+
+void APeackPlayerController::CreateWidget_Warmup()
+{
+	if (this->Widget_Warmup) return;
+
+	this->Widget_Warmup = CreateWidget< UWarmupWidget>(this, this->WidgetClass_Warmup);
+
+	if (this->Widget_Warmup)
+	{
+		this->Widget_Warmup->AddToViewport();
 	}
 }
 
@@ -109,6 +126,28 @@ void APeackPlayerController::UpdateText_Countdown(int TimeLeft)
 	if (this->Widget_PlayerState)
 	{
 		this->Widget_PlayerState->UpdateText_Countdown(TimeLeft);
+	}
+}
+
+void APeackPlayerController::MatchStateGameModeChanged(const FName NewMatchState)
+{
+	this->Client_MatchStateGameModeChanged(NewMatchState);
+}
+
+void APeackPlayerController::Client_MatchStateGameModeChanged_Implementation(const FName NewMatchState) // Implementation
+{
+	if (NewMatchState == MatchState::WaitingToStart)
+	{
+		this->CreateWidget_Warmup();
+	}
+	else if (NewMatchState == MatchState::InProgress)
+	{
+		if (this->Widget_Warmup)
+		{
+			this->Widget_Warmup->RemoveFromParent();
+		}
+
+		this->CreateWidget_PlayerState();
 	}
 }
 

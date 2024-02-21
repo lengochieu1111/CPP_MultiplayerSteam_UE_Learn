@@ -21,4 +21,7 @@ public:
 
 	void HandleCharacterDead(AController* InstigatorController, AController* VictimController);
 
+protected:
+	virtual void OnMatchStateSet() override;
+
 };
