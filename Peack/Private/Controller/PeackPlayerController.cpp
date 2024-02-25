@@ -129,18 +129,37 @@ void APeackPlayerController::UpdateText_Countdown(int TimeLeft)
 	}
 }
 
-void APeackPlayerController::MatchStateGameModeChanged(const FName NewMatchState)
+// Sever
+void APeackPlayerController::GameModeChangedMatchState(const FName NewMatchState)
 {
-	this->Client_MatchStateGameModeChanged(NewMatchState);
+	this->Client_GameModeChangedMatchState(NewMatchState);
 }
 
-void APeackPlayerController::Client_MatchStateGameModeChanged_Implementation(const FName NewMatchState) // Implementation
+// PC: Owning this player controller (Sever, Client)
+void APeackPlayerController::Client_GameModeChangedMatchState_Implementation(const FName NewMatchState) // Implementation
 {
-	if (NewMatchState == MatchState::WaitingToStart)
+	HandleMatchState(NewMatchState);
+}
+
+// Sever
+void APeackPlayerController::GameModeSendInformations(const FName GivenMatchState)
+{
+	Client_GameModeSendInformations(GivenMatchState);
+}
+
+// PC: Owning this player controller (Sever, Client)
+void APeackPlayerController::Client_GameModeSendInformations_Implementation(const FName GivenMatchState) // Implementation
+{
+	HandleMatchState(GivenMatchState);
+}
+
+void APeackPlayerController::HandleMatchState(const FName GivenMatchState)
+{
+	if (GivenMatchState == MatchState::WaitingToStart)
 	{
 		this->CreateWidget_Warmup();
 	}
-	else if (NewMatchState == MatchState::InProgress)
+	else if (GivenMatchState == MatchState::InProgress)
 	{
 		if (this->Widget_Warmup)
 		{

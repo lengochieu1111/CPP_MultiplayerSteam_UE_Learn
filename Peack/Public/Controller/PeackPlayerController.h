@@ -29,10 +29,17 @@ public:
 	void UpdateText_Death(float GivenDeath);
 	void UpdateText_Countdown(int TimeLeft);
 
-	void MatchStateGameModeChanged(const FName NewMatchState);
+	void GameModeChangedMatchState(const FName NewMatchState);
 
 	UFUNCTION(Client, Reliable)
-	void Client_MatchStateGameModeChanged(const FName NewMatchState);
+	void Client_GameModeChangedMatchState(const FName NewMatchState);
+
+	void GameModeSendInformations(const FName GivenMatchState);
+
+	UFUNCTION(Client, Reliable)
+	void Client_GameModeSendInformations(const FName GivenMatchState);
+
+	void HandleMatchState(const FName GivenMatchState);
 
 private:
 	double GetWorldTime() const;

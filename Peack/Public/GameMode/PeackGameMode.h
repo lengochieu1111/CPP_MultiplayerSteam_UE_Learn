@@ -15,6 +15,8 @@ class PEACK_API APeackGameMode : public AGameMode
 	
 public:
 
+	virtual void PostLogin(APlayerController* NewPlayer) override;
+
 	APeackGameMode();
 
 	void RequestRespawn(ACharacter* GivenCharacter, AController* GivenController);
