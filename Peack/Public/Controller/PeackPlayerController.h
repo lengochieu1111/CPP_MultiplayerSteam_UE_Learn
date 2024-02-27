@@ -52,6 +52,11 @@ private:
 	void Client_ReportServerTimeToClient(double RequestTimeFromClient, double ReceverTimeFromServer);
 
 private:
+	FName CurrentMatchState;
+
+	UPROPERTY()
+	TObjectPtr<APeackPlayerState> PeackPlayerState;
+
 	/*
 	* Countdown
 	*/

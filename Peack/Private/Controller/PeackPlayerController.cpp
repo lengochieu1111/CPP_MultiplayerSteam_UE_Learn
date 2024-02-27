@@ -62,15 +62,17 @@ void APeackPlayerController::CreateWidget_Character()
 
 void APeackPlayerController::ReadyPlayerState(APeackPlayerState* GivenPlayerState)
 {
-	/*
-		if (GivenPlayerState)
-		{
-			CreateWidget_PlayerState();
-			UpdateText_Score(GivenPlayerState->GetScore());
-			UpdateText_Death(GivenPlayerState->GetDeath());
-		}
+	this->PeackPlayerState = GivenPlayerState;
 
-	*/
+	if (this->CurrentMatchState == MatchState::InProgress)
+	{
+		if (this->PeackPlayerState)
+		{
+			this->CreateWidget_PlayerState();
+			this->UpdateText_Score(this->PeackPlayerState->GetScore());
+			this->UpdateText_Death(this->PeackPlayerState->GetDeath());
+		}
+	}
 }
 
 void APeackPlayerController::CreateWidget_PlayerState()
@@ -155,6 +157,13 @@ void APeackPlayerController::Client_GameModeSendInformations_Implementation(cons
 
 void APeackPlayerController::HandleMatchState(const FName GivenMatchState)
 {
+	if (this->CurrentMatchState == GivenMatchState)
+	{
+		return;
+	}
+
+	this->CurrentMatchState = GivenMatchState;
+
 	if (GivenMatchState == MatchState::WaitingToStart)
 	{
 		this->CreateWidget_Warmup();
@@ -166,7 +175,13 @@ void APeackPlayerController::HandleMatchState(const FName GivenMatchState)
 			this->Widget_Warmup->RemoveFromParent();
 		}
 
-		this->CreateWidget_PlayerState();
+		if (this->PeackPlayerState)
+		{
+			this->CreateWidget_PlayerState();
+			this->UpdateText_Score(this->PeackPlayerState->GetScore());
+			this->UpdateText_Death(this->PeackPlayerState->GetDeath());
+		}
+
 	}
 }
 
