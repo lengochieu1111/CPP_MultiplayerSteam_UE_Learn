@@ -15,16 +15,53 @@ void APeackPlayerController::Tick(float DeltaSeconds)
 
 	if (IsLocalController())
 	{
-		double TimeLeft = this->TotalTime_Match - GetWorldTime_Server();
-		int CurrentCountdown = FMath::CeilToInt(TimeLeft);
-
-		if (CurrentCountdown != this->LastCountdown)
-		{
-			this->UpdateText_Countdown(CurrentCountdown);
-			this->LastCountdown = CurrentCountdown;
-		}
+		UpdateCountdown();
 	}
 
+}
+
+void APeackPlayerController::UpdateCountdown()
+{
+	if (this->CurrentMatchState == MatchState::WaitingToStart)
+	{
+		UpdateCountdown_Warmup();
+	}
+	else if (this->CurrentMatchState == MatchState::InProgress)
+	{
+		UpdateCountdown_InMatch();
+	}
+}
+
+void APeackPlayerController::UpdateCountdown_Warmup()
+{
+	double TimeLeft = this->TotalTime_Warmup - GetWorldTime_Server();
+	int CurrentCountdown = FMath::CeilToInt(TimeLeft);
+
+	if (CurrentCountdown != this->LastCountdown)
+	{
+		// Warmup
+		// PlayerState
+		if (this->Widget_Warmup)
+		{
+			this->Widget_Warmup->UpdateText_Countdown(CurrentCountdown);
+		}
+		this->LastCountdown = CurrentCountdown;
+	}
+}
+
+void APeackPlayerController::UpdateCountdown_InMatch()
+{
+	double TimeLeft = this->TotalTime_Match - GetWorldTime_Server();
+	int CurrentCountdown = FMath::CeilToInt(TimeLeft);
+
+	if (CurrentCountdown != this->LastCountdown)
+	{
+		if (this->Widget_PlayerState)
+		{
+			this->Widget_PlayerState->UpdateText_Countdown(CurrentCountdown);
+		}
+		this->LastCountdown = CurrentCountdown;
+	}
 }
 
 void APeackPlayerController::ReceivedPlayer()
@@ -123,14 +160,6 @@ void APeackPlayerController::UpdateText_Death(float GivenDeath)
 	}
 }
 
-void APeackPlayerController::UpdateText_Countdown(int TimeLeft)
-{
-	if (this->Widget_PlayerState)
-	{
-		this->Widget_PlayerState->UpdateText_Countdown(TimeLeft);
-	}
-}
-
 // Sever
 void APeackPlayerController::GameModeChangedMatchState(const FName NewMatchState)
 {
@@ -198,4 +227,6 @@ double APeackPlayerController::GetWorldTime_Server() const
 {
 	return GetWorldTime() + this->Detal_Server_Client;
 }
+
+
 

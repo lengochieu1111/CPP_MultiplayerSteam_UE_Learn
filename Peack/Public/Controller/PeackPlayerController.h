@@ -27,7 +27,6 @@ public:
 	void UpdateBar_Health(float Health, float MaxHealth);
 	void UpdateText_Score(float GivenScore);
 	void UpdateText_Death(float GivenDeath);
-	void UpdateText_Countdown(int TimeLeft);
 
 	void GameModeChangedMatchState(const FName NewMatchState);
 
@@ -51,6 +50,12 @@ private:
 	UFUNCTION(Client, Reliable)
 	void Client_ReportServerTimeToClient(double RequestTimeFromClient, double ReceverTimeFromServer);
 
+	void UpdateCountdown();
+	void UpdateCountdown_Warmup();
+	void UpdateCountdown_InMatch();
+
+
+
 private:
 	FName CurrentMatchState;
 
@@ -60,7 +65,11 @@ private:
 	/*
 	* Countdown
 	*/
+	UPROPERTY(EditDefaultsOnly, Category = "Countdown")
 	double TotalTime_Match = 20.0; 
+
+	UPROPERTY(EditDefaultsOnly, Category = "Countdown")
+	double TotalTime_Warmup = 10.0; 
 
 	double LastCountdown = 0.0;
 
