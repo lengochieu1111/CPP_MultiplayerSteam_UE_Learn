@@ -26,4 +26,11 @@ public:
 protected:
 	virtual void OnMatchStateSet() override;
 
+private:
+	UPROPERTY(EditDefaultsOnly, Category = "Countdown")
+	double TotalTime_Match = 20.0;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Countdown")
+	double TotalTime_Warmup = 10.0;
+
 };

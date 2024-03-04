@@ -173,14 +173,18 @@ void APeackPlayerController::Client_GameModeChangedMatchState_Implementation(con
 }
 
 // Sever
-void APeackPlayerController::GameModeSendInformations(const FName GivenMatchState)
+void APeackPlayerController::GameModeSendInformations(const FName GivenMatchState,const double TotalTimeWarmup,const double TotalTimeMatch)
 {
-	Client_GameModeSendInformations(GivenMatchState);
+	this->TotalTime_Warmup = TotalTimeWarmup;
+	this->TotalTime_Match = TotalTimeMatch;
+	Client_GameModeSendInformations(GivenMatchState, TotalTimeWarmup, TotalTimeMatch);
 }
 
-// PC: Owning this player controller (Sever, Client)
-void APeackPlayerController::Client_GameModeSendInformations_Implementation(const FName GivenMatchState) // Implementation
+// PC: Owning this player controller (Sever, Client) 
+void APeackPlayerController::Client_GameModeSendInformations_Implementation(const FName GivenMatchState, const double TotalTimeWarmup, const double TotalTimeMatch) // Implementation
 {
+	this->TotalTime_Warmup = TotalTimeWarmup;
+	this->TotalTime_Match = TotalTimeMatch;
 	HandleMatchState(GivenMatchState);
 }
 

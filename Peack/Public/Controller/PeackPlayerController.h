@@ -33,10 +33,16 @@ public:
 	UFUNCTION(Client, Reliable)
 	void Client_GameModeChangedMatchState(const FName NewMatchState);
 
-	void GameModeSendInformations(const FName GivenMatchState);
+	void GameModeSendInformations(
+		const FName GivenMatchState,
+		const double TotalTimeWarmup,
+		const double TotalTimeMatch);
 
 	UFUNCTION(Client, Reliable)
-	void Client_GameModeSendInformations(const FName GivenMatchState);
+	void Client_GameModeSendInformations(
+		const FName GivenMatchState,
+		const double TotalTimeWarmup,
+		const double TotalTimeMatch);
 
 	void HandleMatchState(const FName GivenMatchState);
 
@@ -65,11 +71,9 @@ private:
 	/*
 	* Countdown
 	*/
-	UPROPERTY(EditDefaultsOnly, Category = "Countdown")
-	double TotalTime_Match = 20.0; 
+	double TotalTime_Match = 0.0; 
 
-	UPROPERTY(EditDefaultsOnly, Category = "Countdown")
-	double TotalTime_Warmup = 10.0; 
+	double TotalTime_Warmup = 0.0; 
 
 	double LastCountdown = 0.0;
 
