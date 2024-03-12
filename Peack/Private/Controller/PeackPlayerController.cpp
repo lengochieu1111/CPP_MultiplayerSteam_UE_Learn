@@ -52,6 +52,8 @@ void APeackPlayerController::UpdateCountdown_Warmup()
 void APeackPlayerController::UpdateCountdown_InMatch()
 {
 	double TimeLeft = this->TotalTime_Match - GetWorldTime_Server();
+	TimeLeft += this->TotalTime_Warmup;
+
 	int CurrentCountdown = FMath::CeilToInt(TimeLeft);
 
 	if (CurrentCountdown != this->LastCountdown)

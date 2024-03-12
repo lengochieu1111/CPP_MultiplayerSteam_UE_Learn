@@ -60,8 +60,6 @@ private:
 	void UpdateCountdown_Warmup();
 	void UpdateCountdown_InMatch();
 
-
-
 private:
 	FName CurrentMatchState;
 
