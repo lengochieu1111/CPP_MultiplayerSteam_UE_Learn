@@ -8,6 +8,28 @@
 #include "Controller/PeackPlayerController.h"
 #include "PlayerState/PeackPlayerState.h"
 
+void APeackGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+
+	this->StartLevelTime = GetWorldTime();
+}
+
+// Sever
+void APeackGameMode::OnMatchStateSet()
+{
+	Super::OnMatchStateSet();
+
+	for (FConstPlayerControllerIterator PCI = GetWorld()->GetPlayerControllerIterator(); PCI; ++PCI)
+	{
+		if (APeackPlayerController* PPC = Cast<APeackPlayerController>(*PCI))
+		{
+			PPC->GameModeChangedMatchState(GetMatchState());
+		}
+	}
+
+}
+
 void APeackGameMode::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
@@ -15,6 +37,8 @@ void APeackGameMode::Tick(float DeltaSeconds)
 	if (GetMatchState() == MatchState::WaitingToStart)
 	{
 		double TimeLeft = this->TotalTime_Warmup - GetWorldTime();
+		TimeLeft += this->StartLevelTime;
+
 		if (TimeLeft <= 0.0)
 		{
 			StartMatch();
@@ -29,7 +53,7 @@ void APeackGameMode::PostLogin(APlayerController* NewPlayer)
 
 	if (APeackPlayerController* PPC = Cast<APeackPlayerController>(NewPlayer))
 	{
-		PPC->GameModeSendInformations(GetMatchState(), this->TotalTime_Warmup, this->TotalTime_Match);
+		PPC->GameModeSendInformations(this->StartLevelTime, GetMatchState(), this->TotalTime_Warmup, this->TotalTime_Match);
 	}
 }
 
@@ -70,21 +94,6 @@ void APeackGameMode::HandleCharacterDead(AController* InstigatorController, ACon
 	{
 		PeackPlayerState->AddOne_Death();
 	}
-}
-
-// Sever
-void APeackGameMode::OnMatchStateSet()
-{
-	Super::OnMatchStateSet();
-
-	for (FConstPlayerControllerIterator PCI = GetWorld()->GetPlayerControllerIterator(); PCI; ++PCI)
-	{
-		if (APeackPlayerController* PPC = Cast<APeackPlayerController>(*PCI))
-		{
-			PPC->GameModeChangedMatchState(GetMatchState());
-		}
-	}
-
 }
 
 double APeackGameMode::GetWorldTime() const

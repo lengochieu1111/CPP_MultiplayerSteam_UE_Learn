@@ -35,6 +35,7 @@ void APeackPlayerController::UpdateCountdown()
 void APeackPlayerController::UpdateCountdown_Warmup()
 {
 	double TimeLeft = this->TotalTime_Warmup - GetWorldTime_Server();
+	TimeLeft += this->StartLevelTime;
 	int CurrentCountdown = FMath::CeilToInt(TimeLeft);
 
 	if (CurrentCountdown != this->LastCountdown)
@@ -52,6 +53,7 @@ void APeackPlayerController::UpdateCountdown_Warmup()
 void APeackPlayerController::UpdateCountdown_InMatch()
 {
 	double TimeLeft = this->TotalTime_Match - GetWorldTime_Server();
+	TimeLeft += this->StartLevelTime;
 	TimeLeft += this->TotalTime_Warmup;
 
 	int CurrentCountdown = FMath::CeilToInt(TimeLeft);
@@ -175,18 +177,22 @@ void APeackPlayerController::Client_GameModeChangedMatchState_Implementation(con
 }
 
 // Sever
-void APeackPlayerController::GameModeSendInformations(const FName GivenMatchState,const double TotalTimeWarmup,const double TotalTimeMatch)
+void APeackPlayerController::GameModeSendInformations(const double SLT, const FName GivenMatchState,const double TotalTimeWarmup,const double TotalTimeMatch)
 {
 	this->TotalTime_Warmup = TotalTimeWarmup;
 	this->TotalTime_Match = TotalTimeMatch;
-	Client_GameModeSendInformations(GivenMatchState, TotalTimeWarmup, TotalTimeMatch);
+	this->StartLevelTime = SLT;
+
+	Client_GameModeSendInformations(SLT, GivenMatchState, TotalTimeWarmup, TotalTimeMatch);
 }
 
 // PC: Owning this player controller (Sever, Client) 
-void APeackPlayerController::Client_GameModeSendInformations_Implementation(const FName GivenMatchState, const double TotalTimeWarmup, const double TotalTimeMatch) // Implementation
+void APeackPlayerController::Client_GameModeSendInformations_Implementation(const double SLT, const FName GivenMatchState, const double TotalTimeWarmup, const double TotalTimeMatch) // Implementation
 {
 	this->TotalTime_Warmup = TotalTimeWarmup;
 	this->TotalTime_Match = TotalTimeMatch;
+	this->StartLevelTime = SLT;
+
 	HandleMatchState(GivenMatchState);
 }
 

@@ -25,12 +25,16 @@ public:
 	void HandleCharacterDead(AController* InstigatorController, AController* VictimController);
 
 protected:
+	virtual void BeginPlay() override;
+
 	virtual void OnMatchStateSet() override;
 
 private:
 	double GetWorldTime() const;
 
 private:
+	double StartLevelTime = 0.0;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Countdown")
 	double TotalTime_Match = 20.0;
 

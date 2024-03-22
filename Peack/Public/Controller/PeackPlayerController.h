@@ -34,12 +34,14 @@ public:
 	void Client_GameModeChangedMatchState(const FName NewMatchState);
 
 	void GameModeSendInformations(
+		const double SLT,
 		const FName GivenMatchState,
 		const double TotalTimeWarmup,
 		const double TotalTimeMatch);
 
 	UFUNCTION(Client, Reliable)
 	void Client_GameModeSendInformations(
+		const double SLT,
 		const FName GivenMatchState,
 		const double TotalTimeWarmup,
 		const double TotalTimeMatch);
@@ -69,6 +71,8 @@ private:
 	/*
 	* Countdown
 	*/
+	double StartLevelTime = 0.0; 
+
 	double TotalTime_Match = 0.0; 
 
 	double TotalTime_Warmup = 0.0; 
