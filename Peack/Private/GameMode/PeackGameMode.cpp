@@ -8,6 +8,12 @@
 #include "Controller/PeackPlayerController.h"
 #include "PlayerState/PeackPlayerState.h"
 
+namespace MatchState
+{
+	const FName ShowResult = FName(TEXT("ShowResult"));
+	
+}
+
 void APeackGameMode::BeginPlay()
 {
 	Super::BeginPlay();
@@ -42,6 +48,17 @@ void APeackGameMode::Tick(float DeltaSeconds)
 		if (TimeLeft <= 0.0)
 		{
 			StartMatch();
+		}
+	}
+	else if (GetMatchState() == MatchState::InProgress)
+	{
+		double TimeLeft = this->TotalTime_Match - GetWorldTime();
+		TimeLeft += this->StartLevelTime;
+		TimeLeft += this->TotalTime_Warmup;
+
+		if (TimeLeft <= 0.0)
+		{
+			SetMatchState(MatchState::ShowResult);
 		}
 	}
 

@@ -6,9 +6,10 @@
 #include "PeackPlayerController.generated.h"
 
 class UCharacterWidget;
-class UPlayerStateWidget;
 class APeackPlayerState;
 class UWarmupWidget;
+class UPlayerStateWidget;
+class UShowResultWidget;
 
 UCLASS()
 class PEACK_API APeackPlayerController : public APlayerController
@@ -22,6 +23,8 @@ public:
 	void CreateWidget_Character();
 	void CreateWidget_PlayerState();
 	void CreateWidget_Warmup();
+	void CreateWidget_ShowResult();
+
 	void ReadyPlayerState(APeackPlayerState* GivenPlayerState);
 
 	void UpdateBar_Health(float Health, float MaxHealth);
@@ -107,5 +110,14 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UWarmupWidget> Widget_Warmup;
+
+	/*
+	* Warmup Widget
+	*/
+	UPROPERTY(EditDefaultsOnly, Category = "Widget")
+	TSubclassOf<UUserWidget> WidgetClass_ShowResult;
+
+	UPROPERTY()
+	TObjectPtr<UShowResultWidget> Widget_ShowResult;
 	
 };

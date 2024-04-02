@@ -5,8 +5,9 @@
 #include "Widget/CharacterWidget.h"
 #include "Widget/PlayerStateWidget.h"
 #include "PlayerState/PeackPlayerState.h"
-#include "GameFramework/GameMode.h"
+#include "GameMode/PeackGameMode.h"
 #include "Widget/WarmupWidget.h"
+#include "Widget/ShowResultWidget.h"
 
 
 void APeackPlayerController::Tick(float DeltaSeconds)
@@ -140,6 +141,18 @@ void APeackPlayerController::CreateWidget_Warmup()
 	}
 }
 
+void APeackPlayerController::CreateWidget_ShowResult()
+{
+	if (this->Widget_ShowResult) return;
+
+	this->Widget_ShowResult = CreateWidget<UShowResultWidget>(this, this->WidgetClass_ShowResult);
+
+	if (this->Widget_ShowResult)
+	{
+		this->Widget_ShowResult->AddToViewport();
+	}
+}
+
 void APeackPlayerController::UpdateBar_Health(float Health, float MaxHealth)
 {
 	if (this->Widget_Character)
@@ -222,7 +235,14 @@ void APeackPlayerController::HandleMatchState(const FName GivenMatchState)
 			this->UpdateText_Score(this->PeackPlayerState->GetScore());
 			this->UpdateText_Death(this->PeackPlayerState->GetDeath());
 		}
-
+	}
+	else if (GivenMatchState == MatchState::ShowResult)
+	{
+		if (this->Widget_PlayerState)
+		{
+			this->Widget_PlayerState->RemoveFromParent();
+		}
+		this->CreateWidget_ShowResult();
 	}
 }
 

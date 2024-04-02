@@ -5,9 +5,11 @@
 #include "GameFramework/GameMode.h"
 #include "PeackGameMode.generated.h"
 
-/**
- * 
- */
+namespace MatchState
+{
+	extern PEACK_API const FName ShowResult;
+}
+
 UCLASS()
 class PEACK_API APeackGameMode : public AGameMode
 {
@@ -36,9 +38,12 @@ private:
 	double StartLevelTime = 0.0;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Countdown")
+	double TotalTime_Warmup = 10.0;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Countdown")
 	double TotalTime_Match = 20.0;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Countdown")
-	double TotalTime_Warmup = 10.0;
+	double TotalTime_ShowResult = 10.0;
 
 };
