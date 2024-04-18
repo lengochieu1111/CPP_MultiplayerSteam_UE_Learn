@@ -31,6 +31,10 @@ void APeackPlayerController::UpdateCountdown()
 	{
 		UpdateCountdown_InMatch();
 	}
+	else if (this->CurrentMatchState == MatchState::ShowResult)
+	{
+		UpdateCountdown_ShowResult();
+	}
 }
 
 void APeackPlayerController::UpdateCountdown_Warmup()
@@ -64,6 +68,25 @@ void APeackPlayerController::UpdateCountdown_InMatch()
 		if (this->Widget_PlayerState)
 		{
 			this->Widget_PlayerState->UpdateText_Countdown(CurrentCountdown);
+		}
+		this->LastCountdown = CurrentCountdown;
+	}
+}
+
+void APeackPlayerController::UpdateCountdown_ShowResult()
+{
+	double TimeLeft = this->TotalTime_ShowResult - GetWorldTime_Server();
+	TimeLeft += this->StartLevelTime;
+	TimeLeft += this->TotalTime_Warmup;
+	TimeLeft += this->TotalTime_Match;
+
+	int CurrentCountdown = FMath::CeilToInt(TimeLeft);
+
+	if (CurrentCountdown != this->LastCountdown)
+	{
+		if (this->Widget_ShowResult)
+		{
+			this->Widget_ShowResult->UpdateText_Countdown(CurrentCountdown);
 		}
 		this->LastCountdown = CurrentCountdown;
 	}
@@ -190,21 +213,28 @@ void APeackPlayerController::Client_GameModeChangedMatchState_Implementation(con
 }
 
 // Sever
-void APeackPlayerController::GameModeSendInformations(const double SLT, const FName GivenMatchState,const double TotalTimeWarmup,const double TotalTimeMatch)
+void APeackPlayerController::GameModeSendInformations(
+	const double SLT,
+	const FName GivenMatchState,
+	const double TotalTimeWarmup,
+	const double TotalTimeMatch,
+	const double TotalTimeShowResult)
 {
-	this->TotalTime_Warmup = TotalTimeWarmup;
-	this->TotalTime_Match = TotalTimeMatch;
-	this->StartLevelTime = SLT;
-
-	Client_GameModeSendInformations(SLT, GivenMatchState, TotalTimeWarmup, TotalTimeMatch);
+	Client_GameModeSendInformations(SLT, GivenMatchState, TotalTimeWarmup, TotalTimeMatch, TotalTimeShowResult);
 }
 
 // PC: Owning this player controller (Sever, Client) 
-void APeackPlayerController::Client_GameModeSendInformations_Implementation(const double SLT, const FName GivenMatchState, const double TotalTimeWarmup, const double TotalTimeMatch) // Implementation
+void APeackPlayerController::Client_GameModeSendInformations_Implementation(
+	const double SLT,
+	const FName GivenMatchState,
+	const double TotalTimeWarmup,
+	const double TotalTimeMatch,
+	const double TotalTimeShowResult) // Implementation
 {
+	this->StartLevelTime = SLT;
 	this->TotalTime_Warmup = TotalTimeWarmup;
 	this->TotalTime_Match = TotalTimeMatch;
-	this->StartLevelTime = SLT;
+	this->TotalTime_ShowResult = TotalTimeShowResult;
 
 	HandleMatchState(GivenMatchState);
 }

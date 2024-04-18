@@ -70,7 +70,7 @@ void APeackGameMode::PostLogin(APlayerController* NewPlayer)
 
 	if (APeackPlayerController* PPC = Cast<APeackPlayerController>(NewPlayer))
 	{
-		PPC->GameModeSendInformations(this->StartLevelTime, GetMatchState(), this->TotalTime_Warmup, this->TotalTime_Match);
+		PPC->GameModeSendInformations(this->StartLevelTime, GetMatchState(), this->TotalTime_Warmup, this->TotalTime_Match, this->TotalTime_ShowResult);
 	}
 }
 

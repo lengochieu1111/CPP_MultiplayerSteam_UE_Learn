@@ -40,14 +40,16 @@ public:
 		const double SLT,
 		const FName GivenMatchState,
 		const double TotalTimeWarmup,
-		const double TotalTimeMatch);
+		const double TotalTimeMatch,
+		const double TotalTimeShowResult);
 
 	UFUNCTION(Client, Reliable)
 	void Client_GameModeSendInformations(
 		const double SLT,
 		const FName GivenMatchState,
 		const double TotalTimeWarmup,
-		const double TotalTimeMatch);
+		const double TotalTimeMatch,
+		const double TotalTimeShowResult);
 
 	void HandleMatchState(const FName GivenMatchState);
 
@@ -64,6 +66,7 @@ private:
 	void UpdateCountdown();
 	void UpdateCountdown_Warmup();
 	void UpdateCountdown_InMatch();
+	void UpdateCountdown_ShowResult();
 
 private:
 	FName CurrentMatchState;
@@ -79,6 +82,9 @@ private:
 	double TotalTime_Match = 0.0; 
 
 	double TotalTime_Warmup = 0.0; 
+
+	double TotalTime_ShowResult = 0.0; 
+
 
 	double LastCountdown = 0.0;
 
