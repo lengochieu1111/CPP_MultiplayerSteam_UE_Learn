@@ -8,6 +8,8 @@
 #include "Controller/PeackPlayerController.h"
 #include "PlayerState/PeackPlayerState.h"
 
+#include "GameState/PeackGameState.h"
+
 namespace MatchState
 {
 	const FName ShowResult = FName(TEXT("ShowResult"));
@@ -105,6 +107,12 @@ void APeackGameMode::HandleCharacterDead(AController* InstigatorController, ACon
 	if (APeackPlayerState* PeackPlayerState = InstigatorController->GetPlayerState<APeackPlayerState>())
 	{
 		PeackPlayerState->AddOne_Score();
+
+		if (APeackGameState* PeackGameState = GetGameState<APeackGameState>())
+		{
+			PeackGameState->UpdateMVP(PeackPlayerState);
+		}
+		
 	}
 
 	if (APeackPlayerState* PeackPlayerState = VictimController->GetPlayerState<APeackPlayerState>())
