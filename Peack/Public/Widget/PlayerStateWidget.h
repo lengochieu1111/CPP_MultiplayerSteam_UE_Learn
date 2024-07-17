@@ -15,6 +15,7 @@ class PEACK_API UPlayerStateWidget : public UCountdownWidget
 public:
 	void UpdateText_Score(float GivenScore);
 	void UpdateText_Death(float GivenDeath);
+	void ToggleText_MVP(const bool bVisibility);
 	
 private:
 	UPROPERTY(meta = (BindWidget))
@@ -22,5 +23,8 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* Text_Death;
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* Text_MVP;
 
 };

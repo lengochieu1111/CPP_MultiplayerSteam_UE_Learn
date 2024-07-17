@@ -18,6 +18,7 @@ class PEACK_API APeackGameState : public AGameState
 	// FUNCTION
 public:
 	APeackGameState();
+
 	void UpdateMVP(APeackPlayerState* InstigatorPlayerState);
 
 	// PROPERTY

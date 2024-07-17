@@ -3,6 +3,10 @@
 #include "Controller/PeackPlayerController.h"
 #include "Net/UnrealNetwork.h"
 
+/*
+* PUBLIC
+*/
+
 APeackPlayerState::APeackPlayerState()
 {
 	NetUpdateFrequency = 1.0f;
@@ -72,10 +76,34 @@ void APeackPlayerState::UpdateText_Death()
 	}
 }
 
+// Sever
+void APeackPlayerState::UpdateMVP(const bool bValue)
+{
+	this->Client_UpdateMVP(bValue);
+}
+
+// Owning controller 
+void APeackPlayerState::Client_UpdateMVP_Implementation(const bool bValue) //  Implementation
+{
+	if (this->PeackPlayerController == nullptr)
+	{
+		this->PeackPlayerController = Cast<APeackPlayerController>(GetOwningController());
+	}
+
+	if (this->PeackPlayerController)
+	{
+		this->PeackPlayerController->ToggleText_MVP(bValue);
+	}
+}
+
 void APeackPlayerState::SetDeath(const float NewDeath)
 {
 	this->Dealth = NewDeath;
 }
+
+/*
+* PROTECTED
+*/
 
 void APeackPlayerState::BeginPlay()
 {
@@ -91,6 +119,10 @@ void APeackPlayerState::BeginPlay()
 		}
 	}
 }
+
+/*
+* PRIVATE
+*/
 
 bool APeackPlayerState::IsLocallyControlled() const
 {

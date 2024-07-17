@@ -22,3 +22,18 @@ void UPlayerStateWidget::UpdateText_Death(float GivenDeath)
 	}
 }
 
+void UPlayerStateWidget::ToggleText_MVP(const bool bVisibility)
+{
+	if (this->Text_MVP)
+	{
+		if (bVisibility)
+		{
+			this->Text_MVP->SetVisibility(ESlateVisibility::Visible);
+		}
+		else
+		{
+			this->Text_MVP->SetVisibility(ESlateVisibility::Hidden);
+		}
+	}
+}
+

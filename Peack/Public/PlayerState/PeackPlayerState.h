@@ -12,6 +12,7 @@ class PEACK_API APeackPlayerState : public APlayerState
 {
 	GENERATED_BODY()
 
+	// FUNCTION
 public:
 	APeackPlayerState();
 	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
@@ -22,6 +23,14 @@ public:
 
 	void AddOne_Death();
 	void UpdateText_Death();
+
+	void UpdateMVP(const bool bValue);
+
+	UFUNCTION(Client, Reliable)
+	void Client_UpdateMVP(const bool bValue);
+
+	// Setter Gettter
+public:
 
 	float GetDeath() const
 	{
@@ -42,6 +51,7 @@ private:
 	UFUNCTION()
 	void OnRep_Death();
 
+	// PROPERTY
 private:
 	UPROPERTY()
 	TObjectPtr<APeackPlayerController> PeackPlayerController;

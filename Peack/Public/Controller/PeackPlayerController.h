@@ -53,6 +53,8 @@ public:
 
 	void HandleMatchState(const FName GivenMatchState);
 
+	void ToggleText_MVP(const bool bVisibility);
+
 private:
 	double GetWorldTime() const;
 	double GetWorldTime_Server() const;

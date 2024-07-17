@@ -92,6 +92,14 @@ void APeackPlayerController::UpdateCountdown_ShowResult()
 	}
 }
 
+void APeackPlayerController::ToggleText_MVP(const bool bVisibility)
+{
+	if (this->Widget_PlayerState)
+	{
+		this->Widget_PlayerState->ToggleText_MVP(bVisibility);
+	}
+}
+
 void APeackPlayerController::ReceivedPlayer()
 {
 	if (!HasAuthority() && IsLocalController())
